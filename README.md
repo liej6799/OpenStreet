@@ -1,7 +1,11 @@
 # OpenStreet
 
 ## What to do
-- Implement lane detectio 
+- Implement lane detection (Accomplish with simple openCV)
+
+## Problems
+- 
+
 
 ## Data Sets
 
@@ -13,3 +17,8 @@ The data sets used is from KITTI which can be found here http://www.cvlibs.net/d
 Tools and Libraries used in this project.
 - OpenCV
 
+## Resources
+- https://unsupervised-llamas.com/llamas/ 
+
+# Video Resources
+- https://www.youtube.com/watch?v=eLTLtUVuuy4
