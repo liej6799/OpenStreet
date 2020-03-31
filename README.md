@@ -1,10 +1,7 @@
 # OpenStreet
 
 ## What to do
-- Implement lane detection (Accomplish with simple openCV)
-
-## Problems
-- 
+- Implement lane detection with computer vision instead of CNN (Much faster)
 
 
 ## Data Sets
