@@ -19,3 +19,7 @@ Tools and Libraries used in this project.
 
 # Video Resources
 - https://www.youtube.com/watch?v=eLTLtUVuuy4
+
+# Papers
+- A Computer Vision based Lane Detection Approach
+
