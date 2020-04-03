@@ -8,16 +8,12 @@ from sklearn import linear_model
 image = '0000000001.png'
 folder = '../video-data/kitti/2011_09_26_drive_0001_extract/image_00/data/'
 
-def getImage():
-    img = cv2.imread(folder + image) # reads image 'opencv-logo.png' as grayscale    plt.imshow(img)
-    return img
-
 def gaussianBlur(image):
     return cv2.GaussianBlur(image,(5,5),0)
 
 def regionOfInterest(image):
     height = image.shape[0]
-    triangle = np.array([[(0, height), (1000, height), (680, 200)]])
+    triangle = np.array([[(460, height), (1000, height), (650, 450)]])
     mask = np.zeros_like(image)
     cv2.fillPoly(mask, triangle, 255)
     return cv2.bitwise_and(image, mask)
@@ -34,6 +30,8 @@ def extract_lane(road_lines):
         for x in range(0, len(road_lines)):
             for x1, y1, x2, y2 in road_lines[x]:
                 slope = compute_slope(x1, y1, x2, y2)
+                if slope is None:
+                    slope = 0.0
                 if (slope < 0):
                     left_lane.append(road_lines[x])
                     left_slope.append(slope)
@@ -123,6 +121,8 @@ def ransac_drawlane(left_lane_sa, right_lane_sa, frame):
 
     # Coordinates for point 3(Bottom Left)
     y_3 = y_limit_high
+    if slope_right == 0:
+        slope_right = 1
     x_3 = int((y_3 - intercept_right) / slope_right)
 
     # Coordinates for point 4(Bottom Right)
@@ -145,17 +145,43 @@ def getGrayImage():
     # Convert to Grayscale
     return cv2.cvtColor(getImage(), cv2.COLOR_BGR2GRAY)
 
-roi_image = (regionOfInterest(gaussianBlur(getImage())))
+cap  = cv2.VideoCapture('/home/joes/Downloads/video.mp4')
+while True:
+    _, frame = cap.read()
+    #imgHLS = cv2.cvtColor(frame, cv2.COLOR_BGR2HLS)
+    # Color space conversion
+    roi_image = (regionOfInterest(frame))
+    img_gray = cv2.cvtColor(roi_image, cv2.COLOR_BGR2GRAY)
 
-imgHLS = cv2.cvtColor(roi_image, cv2.COLOR_BGR2HLS)
-canny_image = cv2.Canny(imgHLS,100,200)
+    mask_white = cv2.inRange(img_gray, 110, 255)
 
 
-lines = cv2.HoughLinesP(canny_image, 1, np.pi/180, 50, maxLineGap=50)
-left_lane, right_lane, left_slope, right_slope = extract_lane(lines)
-left_lane_sa, right_lane_sa = split_append(left_lane, right_lane)
-image_np = ransac_drawlane(left_lane_sa, right_lane_sa,getImage())
+    canny_image = cv2.Canny(roi_image, 100, 200)
+    mask_onimage = cv2.bitwise_and(img_gray, canny_image)
 
-cv2.imshow("awd", image_np)
-cv2.waitKey(0)
+
+    lines = cv2.HoughLinesP(mask_onimage, 1, np.pi/180, 50, maxLineGap=50)
+    left_lane, right_lane, left_slope, right_slope = extract_lane(lines)
+    left_lane_sa, right_lane_sa = split_append(left_lane, right_lane)
+    image_np = ransac_drawlane(left_lane_sa, right_lane_sa,frame)
+
+    cv2.imshow("awd", image_np)
+
+    #cv2.imshow("awd", image_np)
+
+    key = cv2.waitKey(1)
+    if key == 27:
+        break
+
+
+#
+
+#
+#
+
+
+
+
+#cv2.imshow("awd", image_np)
+#cv2.waitKey(0)
 
